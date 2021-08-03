@@ -49,19 +49,9 @@ func! CompileRunGcc()
 		:term go run .
 	endif
 endfunc
-"set clipboard=unnamedplus
-let &t_ut=''
-set autochdir
-let mapleader=" "
-
-" Markdown
-" Snippets
-source $HOME/.config/nvim/md-snippets.vim
-" auto spell
-autocmd BufRead,BufNewFile *.md setlocal spell
-
+ 
 " Basic key
-
+let mapleader = "\<space>"
 noremap o k
 noremap l j
 noremap k h
@@ -108,20 +98,28 @@ map tb :tabe<CR>
 map tl :+tabnext<CR>
 map tj :-tabnext<CR>
 
-" Basic functions
-set ruler
-syntax on
-set number
-set relativenumber
-set showcmd
-set wildmenu
+noremap tmk :-tabmove<CR>
+noremap tm; :+tabmove<CR>
 
-let &t_SI = "\<ESC>]50;CursorShape=1\x7"
-let &t_SR = "\<ESC>]50;CursorShape=2\x7"
-let &t_EI = "\<ESC>]50;CursorShape=0\x7"
 
+" ====================
+" === Editor Setup ===
+" ====================
+" ===
+" === System
+" ===
+"set clipboard=unnamedplus
+let &t_ut=''
+set autochdir
+
+
+" ===
+" === Editor behavior
+" ===
 set exrc
 set secure
+set number
+set relativenumber
 set cursorline
 set hidden
 set noexpandtab
@@ -145,6 +143,8 @@ set formatoptions-=tc
 set splitright
 set splitbelow
 set noshowmode
+set showcmd
+set wildmenu
 set ignorecase
 set smartcase
 set shortmess+=c
@@ -167,6 +167,16 @@ set updatetime=100
 set virtualedit=block
 
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+
+" ===
+" === Terminal Behaviors
+" ===
+let g:neoterm_autoscroll = 1
+autocmd TermOpen term://* startinsert
+tnoremap <C-N> <C-\><C-N>
+tnoremap <C-O> <C-\><C-N><C-O>
+ 
 
 " Plug section
 call plug#begin('~/.config/nvim/plugged')
@@ -194,6 +204,14 @@ Plug 'preservim/nerdtree' |
 
 Plug 'mbbill/undotree'
 
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
+
+Plug 'wfxr/minimap.vim'
+
+
 " Markdown
 "Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
@@ -202,6 +220,13 @@ Plug 'dhruvasagar/vim-table-mode'
 
 " Snippets
 Plug 'theniceboy/vim-snippets'
+
+" Git
+Plug 'airblade/vim-gitgutter'
+
+" Hilight
+Plug 'RRethy/vim-illuminate'
+Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
 
 call plug#end()
 
@@ -218,40 +243,11 @@ colorscheme gruvbox
 set laststatus=2
 let g:airline_powerline_fonts = 1
 
-" Coc-nvim
-" Set internal encoding of vim, not needed on neovim, since coc.nvim using some
-" unicode characters in the file autoload/float.vim
+" === 
+" === Coc-nvim
+" ===
 set encoding=utf-8
 
-" TextEdit might fail if hidden is not set.
-set hidden
-
-" Some servers have issues with backup files, see #649.
-set nobackup
-set nowritebackup
-
-" Give more space for displaying messages.
-set cmdheight=2
-
-" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
-" delays and poor user experience.
-set updatetime=300
-
-" Don't pass messages to |ins-completion-menu|.
-set shortmess+=c
-
-" Always show the signcolumn, otherwise it would shift the text each time
-" diagnostics appear/become resolved.
-if has("nvim-0.5.0") || has("patch-8.1.1564")
-  " Recently vim can merge signcolumn and number column into one
-  set signcolumn=number
-else
-  set signcolumn=yes
-endif
-
-" Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
       \ <SID>check_back_space() ? "\<TAB>" :
@@ -262,31 +258,16 @@ function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
-
-" Use <c-space> to trigger completion.
-if has('nvim')
-  inoremap <silent><expr> <c-space> coc#refresh()
-else
-  inoremap <silent><expr> <c-@> coc#refresh()
-endif
-
-" Make <CR> auto-select the first completion item and notify coc.nvim to
-" format on enter, <cr> could be remapped by other vim plugin
+inoremap <silent><expr> <c-n> coc#refresh()
 inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
-
-" Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
@@ -298,14 +279,8 @@ function! s:show_documentation()
     execute '!' . &keywordprg . " " . expand('<cword>')
   endif
 endfunction
-
-" Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
-
-" Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
-
-" Formatting selected code.
 xmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
 
@@ -316,74 +291,13 @@ augroup mygroup
   " Update signature help on jump placeholder.
   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 augroup end
-
-" Applying codeAction to the selected region.
-" Example: `<leader>aap` for current paragraph
+" Remap for do codeAction of selected region
+function! s:cocActionsOpenFromSelected(type) abort
+  execute 'CocCommand actions.open ' . a:type
+endfunction
 xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>aw  <Plug>(coc-codeaction-selected)w
 
-" Remap keys for applying codeAction to the current buffer.
-nmap <leader>ac  <Plug>(coc-codeaction)
-" Apply AutoFix to problem on the current line.
-nmap <leader>qf  <Plug>(coc-fix-current)
-
-" Map function and class text objects
-" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
-xmap if <Plug>(coc-funcobj-i)
-omap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
-omap af <Plug>(coc-funcobj-a)
-xmap ic <Plug>(coc-classobj-i)
-omap ic <Plug>(coc-classobj-i)
-xmap ac <Plug>(coc-classobj-a)
-omap ac <Plug>(coc-classobj-a)
-
-" Remap <C-f> and <C-b> for scroll float windows/popups.
-if has('nvim-0.4.0') || has('patch-8.2.0750')
-  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
-  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
-  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-endif
-
-" Use CTRL-S for selections ranges.
-" Requires 'textDocument/selectionRange' support of language server.
-nmap <silent> <C-s> <Plug>(coc-range-select)
-xmap <silent> <C-s> <Plug>(coc-range-select)
-
-" Add `:Format` command to format current buffer.
-command! -nargs=0 Format :call CocAction('format')
-
-" Add `:Fold` command to fold current buffer.
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-" Add `:OR` command for organize imports of the current buffer.
-command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
-
-" Add (Neo)Vim's native statusline support.
-" NOTE: Please see `:h coc-status` for integrations with external plugins that
-" provide custom statusline: lightline.vim, vim-airline.
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
-
-" Mappings for CoCList
-" Show all diagnostics.
-"nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
-" Manage extensions.
-"nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
-" Show commands.
-"nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
-" Find symbol of current document.
-"nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
-" Search workspace symbols.
-"nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
-" Do default action for next item.
-"nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
-" Do default action for previous item.
-"nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
-" Resume latest coc list.
-"nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 
 let g:coc_global_extensions = [
 	\ 'coc-css',
@@ -526,3 +440,79 @@ let g:startify_custom_header_quotes = [
     \ ['quote #2', 'using', 'three lines'],
     \ {-> systemlist('echo quote #3')}
     \ ]
+
+" ==
+" == GitGutter
+" ==
+" let g:gitgutter_signs = 0
+let g:gitgutter_sign_allow_clobber = 0
+let g:gitgutter_map_keys = 0
+let g:gitgutter_override_sign_column_highlight = 0
+let g:gitgutter_preview_win_floating = 1
+let g:gitgutter_sign_added = '▎'
+let g:gitgutter_sign_modified = '░'
+let g:gitgutter_sign_removed = '▏'
+let g:gitgutter_sign_removed_first_line = '▔'
+let g:gitgutter_sign_modified_removed = '▒'
+" autocmd BufWritePost * GitGutter
+nnoremap <LEADER>gf :GitGutterFold<CR>
+nnoremap H :GitGutterPreviewHunk<CR>
+nnoremap <LEADER>g- :GitGutterPrevHunk<CR>
+nnoremap <LEADER>g= :GitGutterNextHunk<CR>
+ 
+
+" ===
+" === vim-illuminate
+" ===
+let g:Illuminate_delay = 750
+hi illuminatedWord cterm=undercurl gui=undercurl
+ 
+" ===
+" === hexokinase
+" ===
+let g:Hexokinase_highlighters = [ 'virtual' ]
+let g:Hexokinase_optInPatterns = 'full_hex,rgb,rgba,hsl,hsla,colour_names'
+ 
+" ===
+" === fzf
+" ===
+set rtp+=/usr/local/opt/fzf
+set rtp+=/home/linuxbrew/.linuxbrew/opt/fzf
+set rtp+=/home/david/.linuxbrew/opt/fzf
+nnoremap <c-f> :Leaderf file<CR>
+let g:fzf_preview_window = ['right:50%', 'ctrl-/']
+function! s:fzf_statusline()
+  " Override statusline as you like
+  highlight fzf1 ctermfg=161 ctermbg=251
+  highlight fzf2 ctermfg=23 ctermbg=251
+  highlight fzf3 ctermfg=237 ctermbg=251
+  setlocal statusline=%#fzf1#\ >\ %#fzf2#fz%#fzf3#f
+endfunction
+
+autocmd! User FzfStatusLine call <SID>fzf_statusline()
+
+" ===
+" === LeaderF
+" ===
+let g:Lf_PreviewInPopup = 1
+let g:Lf_PreviewCode = 1
+let g:Lf_ShowHidden = 1
+let g:Lf_ShowDevIcons = 1
+let g:Lf_UseVersionControlTool = 0
+let g:Lf_IgnoreCurrentBufferName = 1
+let g:Lf_WildIgnore = {
+        \ 'dir': ['.git', 'vendor', 'node_modules'],
+        \ 'file': ['__vim_project_root', 'class']
+        \}
+let g:Lf_UseMemoryCache = 0
+let g:Lf_UseCache = 0
+
+
+" ===
+" === minimap
+" ===
+let g:minimap_width = 5
+let g:minimap_auto_start = 0
+let g:minimap_auto_start_win_enter = 1
+
+noremap <F3> :MinimapToggle<CR>
