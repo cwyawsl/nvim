@@ -5,6 +5,8 @@
 "| |  | | | |   | |\  | \ V /  | || |  | |  _ <| |___
 "|_|  |_| |_|   |_| \_|  \_/  |___|_|  |_|_| \_\\____|
 
+source ~/.config/nvim/_machine_specific_default.vim
+
 " Compile function
 noremap r :call CompileRunGcc()<CR>
 func! CompileRunGcc()
@@ -228,6 +230,10 @@ Plug 'airblade/vim-gitgutter'
 Plug 'RRethy/vim-illuminate'
 Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
 
+" Tools
+"Plug 'windwp/nvim-autopairs'
+Plug 'Yggdroot/indentLine'
+
 call plug#end()
 
 source ~/Documents/code/auto_change_themes.vim
@@ -301,6 +307,7 @@ nmap <leader>aw  <Plug>(coc-codeaction-selected)w
 
 let g:coc_global_extensions = [
 	\ 'coc-css',
+	\ 'coc-pairs',
 	\ 'coc-diagnostic',
 	\ 'coc-docker',
 	\ 'coc-eslint',
@@ -403,7 +410,9 @@ let g:vimwiki_list = [{
 let g:gruvbox_bold = 1
 let g:gruvbox_italic = 1
 let g:gruvbox_transparent_bg = 1
-let  g:gruvbox_contrast = "soft"
+"let g:gruvbox_contrast_light = "soft"
+"let g:gruvbox_contrast_dark = "soft"
+ 
 let g:gruvbox_hls_cursor = "green"
 
 " ===
@@ -516,3 +525,14 @@ let g:minimap_auto_start = 0
 let g:minimap_auto_start_win_enter = 1
 
 noremap <F3> :MinimapToggle<CR>
+
+" ===
+" === indentLine
+" ===
+let g:indentLine_setColors = 0
+let g:indentLine_defaultGroup = 'SpecialKey'
+let g:indentLine_char_list = ['|', '¦', '┆', '┊']
+let g:indentLine_enabled = 0
+let g:indentLine_concealcursor = 'inc'
+let g:indentLine_conceallevel = 2
+noremap <c-s> :IndentLinesToggle<CR>
