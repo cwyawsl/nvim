@@ -188,6 +188,9 @@ Plug 'connorholyday/vim-snazzy'
 Plug 'dracula/vim'
 Plug 'sainnhe/sonokai'
 Plug 'morhetz/gruvbox'
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'joshdick/onedark.vim'
+
 
 " Beautiful dress
 "Plug 'liuchengxu/eleline.vim'
@@ -236,7 +239,6 @@ Plug 'Yggdroot/indentLine'
 
 call plug#end()
 
-source ~/Documents/code/auto_change_themes.vim
 "set background=light
 set t_Co=256
 " theme
@@ -244,7 +246,9 @@ set termguicolors " enable true colors support
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 "colorscheme snazzy
 "colorscheme dracula
-colorscheme gruvbox
+"colorscheme gruvbox
+"colorscheme PaperColor
+source ~/.config/nvim/auto_change_themes.vim
 
 set laststatus=2
 let g:airline_powerline_fonts = 1
@@ -409,8 +413,8 @@ let g:vimwiki_list = [{
 " ===
 let g:gruvbox_bold = 1
 let g:gruvbox_italic = 1
-let g:gruvbox_transparent_bg = 1
-"let g:gruvbox_contrast_light = "soft"
+let g:gruvbox_transparent_bg = 0
+let g:gruvbox_contrast_light = "hard"
 "let g:gruvbox_contrast_dark = "soft"
  
 let g:gruvbox_hls_cursor = "green"
@@ -536,3 +540,8 @@ let g:indentLine_enabled = 0
 let g:indentLine_concealcursor = 'inc'
 let g:indentLine_conceallevel = 2
 noremap <c-s> :IndentLinesToggle<CR>
+
+" ===
+" === Papercolor
+" ===
+

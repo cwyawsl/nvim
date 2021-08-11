@@ -151,10 +151,6 @@
 		"eelixir": "mix_format"
 	},
 	"languageserver": {
-		"lua": {
-			"command": "lua-lsp",
-			"filetypes": ["lua"]
-		},
 		"swift": {
 			"command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp",
 			"args": [],
